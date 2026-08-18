@@ -140,14 +140,13 @@ export class Client {
   async playCardFaceDown(
     gameId: string,
     playerId: string,
-    cardId: string,
   ): Promise<PlayCardFaceDownResult> {
     const response = await fetch(`${this.baseUrl}/playCardFaceDown`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ gameId, playerId, cardId }),
+      body: JSON.stringify({ gameId, playerId }),
     });
     const result = await response.json();
     return result;
@@ -156,14 +155,13 @@ export class Client {
   async playCardFaceUp(
     gameId: string,
     playerId: string,
-    cardId: string,
   ): Promise<PlayCardFaceUpResult> {
     const response = await fetch(`${this.baseUrl}/playCardFaceUp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ gameId, playerId, cardId }),
+      body: JSON.stringify({ gameId, playerId }),
     });
     const result = await response.json();
     return result;
