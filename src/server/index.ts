@@ -12,19 +12,22 @@ import { sendChat } from "./actions/sendChat.js";
 import { startGame } from "./actions/startGame.js";
 
 export const actions = [
-  { path: "/collectCards", func: collectCards },
-  { path: "/createGame", func: createGame },
-  { path: "/getClientStateAndClearEvents", func: getClientStateAndClearEvents },
+  { path: "/collectCards", action: collectCards },
+  { path: "/createGame", action: createGame },
+  {
+    path: "/getClientStateAndClearEvents",
+    action: getClientStateAndClearEvents,
+  },
   {
     path: "/getEventsAndClearAcknowledged",
-    func: getEventsAndClearAcknowledged,
+    action: getEventsAndClearAcknowledged,
   },
-  { path: "/getJoinableGames", func: getJoinableGames },
-  { path: "/joinGame", func: joinGame },
-  { path: "/leaveGame", func: leaveGame },
-  { path: "/playCardFaceDown", func: playCardFaceDown },
-  { path: "/playCardFaceUp", func: playCardFaceUp },
-  { path: "/replenishDeck", func: replenishDeck },
-  { path: "/sendChat", func: sendChat },
-  { path: "/startGame", func: startGame },
+  { path: "/getJoinableGames", action: getJoinableGames },
+  { path: "/joinGame", action: joinGame },
+  { path: "/leaveGame", action: leaveGame },
+  { path: "/playCardFaceDown", action: playCardFaceDown },
+  { path: "/playCardFaceUp", action: playCardFaceUp },
+  { path: "/replenishDeck", action: replenishDeck },
+  { path: "/sendChat", action: sendChat },
+  { path: "/startGame", action: startGame },
 ] as const;
