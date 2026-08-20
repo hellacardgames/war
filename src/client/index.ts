@@ -13,11 +13,11 @@ export type {
   ReplenishDeckResult,
   SendChatResult,
   StartGameResult,
-} from "../server/index.js";
+} from "./Client.js";
 
 export type {
   Card,
   ChatMessage,
   ClientState,
   GameEvent,
-} from "../server/index.js";
+} from "../manager/index.js";
