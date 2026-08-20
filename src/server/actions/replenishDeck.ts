@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { replenishDeck as doReplenishDeck } from "../../manager/actions/replenishDeck.js";
+import { replenishDeck as doReplenishDeck } from "../../manager/index.js";
 
 export type ReplenishDeckResult =
   | {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { collectCards as doCollectCards } from "../../manager/actions/collectCards.js";
+import { collectCards as doCollectCards } from "../../manager/index.js";
 
 export type CollectCardsResult =
   | {

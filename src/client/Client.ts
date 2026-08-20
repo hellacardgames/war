@@ -1,21 +1,4 @@
-import type { CollectCardsResult } from "../server/actions/collectCards.js";
-import type { CreateGameResult } from "../server/actions/createGame.js";
-import type { GetClientStateAndClearEventsResult } from "../server/actions/getClientStateAndClearEvents.js";
-import type { GetEventsAndClearAcknowledgedResult } from "../server/actions/getEventsAndClearAcknowledged.js";
-import type { GetJoinableGamesResult } from "../server/actions/getJoinableGames.js";
-import type { JoinGameResult } from "../server/actions/joinGame.js";
-import type { LeaveGameResult } from "../server/actions/leaveGame.js";
-import type { PlayCardFaceDownResult } from "../server/actions/playCardFaceDown.js";
-import type { PlayCardFaceUpResult } from "../server/actions/playCardFaceUp.js";
-import type { ReplenishDeckResult } from "../server/actions/replenishDeck.js";
-import type { SendChatResult } from "../server/actions/sendChat.js";
-import type { StartGameResult } from "../server/actions/startGame.js";
-import type { Card } from "../manager/types/Card.js";
-import type { ChatMessage } from "../manager/types/ChatMessage.js";
-import type { ClientState } from "../manager/types/ClientState.js";
-import type { GameEvent } from "../manager/types/GameEvent.js";
-
-export type {
+import type {
   CollectCardsResult,
   CreateGameResult,
   GetClientStateAndClearEventsResult,
@@ -28,11 +11,7 @@ export type {
   ReplenishDeckResult,
   SendChatResult,
   StartGameResult,
-  Card,
-  ChatMessage,
-  ClientState,
-  GameEvent,
-};
+} from "../server/index.js";
 
 export class Client {
   private readonly baseUrl: string;

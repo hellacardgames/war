@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { playCardFaceUp as doPlayCardFaceUp } from "../../manager/actions/playCardFaceUp.js";
+import { playCardFaceUp as doPlayCardFaceUp } from "../../manager/index.js";
 
 export type PlayCardFaceUpResult =
   | {
