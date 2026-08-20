@@ -14,6 +14,7 @@ export type CollectCardsResult =
         | "invalidStatus"
         | "invalidMove";
     };
+
 const inputSchema = z
   .object({
     gameId: z.string(),
