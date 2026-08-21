@@ -3,38 +3,38 @@ import type { Player } from "./Player.js";
 
 export type Game = CreatedGame | StartedGame | CompletedGame | ForfeitedGame;
 
-type CreatedGame = {
+export type CreatedGame = {
   readonly status: "created";
   readonly id: string;
   readonly createdAt: number;
   readonly expiresAt: number;
-  readonly chatMessages: ChatMessage[];
+  readonly chatMessages: readonly ChatMessage[];
   readonly players: Player[];
 };
 
-type StartedGame = {
+export type StartedGame = {
   readonly status: "started";
   readonly id: string;
   readonly createdAt: number;
   expiresAt: number;
-  readonly chatMessages: ChatMessage[];
+  readonly chatMessages: readonly ChatMessage[];
   readonly players: Player[];
 };
 
-type CompletedGame = {
+export type CompletedGame = {
   readonly status: "completed";
   readonly id: string;
   readonly createdAt: number;
   readonly expiresAt: number;
-  readonly chatMessages: ChatMessage[];
+  readonly chatMessages: readonly ChatMessage[];
   readonly players: Player[];
 };
 
-type ForfeitedGame = {
+export type ForfeitedGame = {
   readonly status: "forfeited";
   readonly id: string;
   readonly createdAt: number;
   readonly expiresAt: number;
-  readonly chatMessages: ChatMessage[];
+  readonly chatMessages: readonly ChatMessage[];
   readonly players: Player[];
 };

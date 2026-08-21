@@ -20,4 +20,4 @@ export type {
   ChatMessage,
   ClientState,
   GameEvent,
-} from "../manager/index.js";
+} from "../game/index.js";
