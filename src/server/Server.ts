@@ -223,7 +223,7 @@ const startGameInputSchema = z
   .transform(({ gameId, playerId }) => [gameId, playerId] as const);
 
 export class Server {
-  private readonly manager = new Manager();
+  private readonly manager: Manager;
 
   readonly actions = [
     { path: "/collectCards", action: this.collectCards.bind(this) },
@@ -245,6 +245,10 @@ export class Server {
     { path: "/sendChat", action: this.sendChat.bind(this) },
     { path: "/startGame", action: this.startGame.bind(this) },
   ] as const;
+
+  constructor(...args: ConstructorParameters<typeof Manager>) {
+    this.manager = new Manager(...args);
+  }
 
   private collectCards(input: unknown): CollectCardsResult {
     const parseResult = collectCardsInputSchema.safeParse(input);
