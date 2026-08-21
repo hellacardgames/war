@@ -11,8 +11,8 @@ export type CollectCardsResult =
       readonly error:
         | "invalidInput"
         | "gameNotFound"
-        | "playerNotFound"
         | "invalidStatus"
+        | "playerNotFound"
         | "invalidMove";
     };
 
@@ -87,8 +87,8 @@ export type PlayCardFaceDownResult =
       readonly error:
         | "invalidInput"
         | "gameNotFound"
-        | "playerNotFound"
         | "invalidStatus"
+        | "playerNotFound"
         | "invalidMove"
         | "deckEmpty";
     };
@@ -102,8 +102,8 @@ export type PlayCardFaceUpResult =
       readonly error:
         | "invalidInput"
         | "gameNotFound"
-        | "playerNotFound"
         | "invalidStatus"
+        | "playerNotFound"
         | "invalidMove"
         | "deckEmpty";
     };
@@ -117,8 +117,8 @@ export type ReplenishDeckResult =
       readonly error:
         | "invalidInput"
         | "gameNotFound"
-        | "playerNotFound"
         | "invalidStatus"
+        | "playerNotFound"
         | "invalidMove"
         | "deckNotEmpty"
         | "capturePileEmpty";
