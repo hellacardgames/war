@@ -2,49 +2,36 @@ import { emitEvent } from "../lib/emitEvent.js";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import type { CompletedGame, StartedGame } from "../types/Game.js";
 
-type CollectCardsResult =
-  | {
-      readonly success: true;
-      readonly game: StartedGame | CompletedGame;
-    }
-  | {
-      readonly success: false;
-      readonly error: "playerNotFound" | "invalidMove";
-    };
-
-export function collectCards(
-  game: StartedGame,
-  playerId: string,
-): CollectCardsResult {
+export function collectCards(game: StartedGame, playerId: string) {
   const player = game.players.find((p) => p.id === playerId);
   if (!player) {
-    return { success: false, error: "playerNotFound" };
+    return { success: false, error: "playerNotFound" } as const;
   }
   if (player.battlePile.length % 2 !== 1) {
-    return { success: false, error: "invalidMove" };
+    return { success: false, error: "invalidMove" } as const;
   }
   const otherPlayer = game.players.find((p) => p !== player)!;
   if (player.battlePile.length < otherPlayer.battlePile.length) {
-    return { success: false, error: "invalidMove" };
+    return { success: false, error: "invalidMove" } as const;
   }
   if (
     player.battlePile.length > otherPlayer.battlePile.length &&
     (otherPlayer.deck.length > 0 || otherPlayer.capturePile.length > 0)
   ) {
-    return { success: false, error: "invalidMove" };
+    return { success: false, error: "invalidMove" } as const;
   }
   if (player.battlePile.length === otherPlayer.battlePile.length) {
     const playerCard = player.battlePile[player.battlePile.length - 1]!;
     const otherPlayerCard =
       otherPlayer.battlePile[otherPlayer.battlePile.length - 1]!;
     if (playerCard.rank < otherPlayerCard.rank) {
-      return { success: false, error: "invalidMove" };
+      return { success: false, error: "invalidMove" } as const;
     }
     if (
       playerCard.rank === otherPlayerCard.rank &&
       (otherPlayer.deck.length > 0 || otherPlayer.capturePile.length > 0)
     ) {
-      return { success: false, error: "invalidMove" };
+      return { success: false, error: "invalidMove" } as const;
     }
   }
   game.expiresAt = Date.now() + EXPIRY_EXTENSION_MS;
@@ -64,7 +51,7 @@ export function collectCards(
       ...game,
       status: "completed",
     };
-    return { success: true, game: completedGame };
+    return { success: true, game: completedGame } as const;
   }
-  return { success: true, game };
+  return { success: true, game } as const;
 }

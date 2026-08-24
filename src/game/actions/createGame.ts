@@ -2,12 +2,7 @@ import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import type { CreatedGame } from "../types/Game.js";
 import type { Player } from "../types/Player.js";
 
-type CreateGameResult = {
-  readonly game: CreatedGame;
-  readonly playerId: string;
-};
-
-export function createGame(userId: string, username: string): CreateGameResult {
+export function createGame(userId: string, username: string) {
   const player: Player = {
     id: crypto.randomUUID(),
     userId,
@@ -26,5 +21,5 @@ export function createGame(userId: string, username: string): CreateGameResult {
     chatMessages: [],
     players: [player],
   };
-  return { game, playerId: player.id };
+  return { game, playerId: player.id } as const;
 }

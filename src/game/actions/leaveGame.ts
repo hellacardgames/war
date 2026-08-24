@@ -2,20 +2,10 @@ import { emitEvent } from "../lib/emitEvent.js";
 import { EXPIRY_EXTENSION_MS, MIN_PLAYERS } from "../constants.js";
 import type { Game } from "../types/Game.js";
 
-type LeaveGameResult =
-  | {
-      readonly success: true;
-      readonly game: Game;
-    }
-  | {
-      readonly success: false;
-      readonly error: "playerNotFound";
-    };
-
-export function leaveGame(game: Game, playerId: string): LeaveGameResult {
+export function leaveGame(game: Game, playerId: string) {
   const playerIndex = game.players.findIndex((p) => p.id === playerId);
   if (playerIndex === -1) {
-    return { success: false, error: "playerNotFound" };
+    return { success: false, error: "playerNotFound" } as const;
   }
 
   const player = game.players[playerIndex]!;
@@ -34,6 +24,7 @@ export function leaveGame(game: Game, playerId: string): LeaveGameResult {
       type: "expirationUpdated",
       expiresAt: forfeitedGame.expiresAt,
     });
+    return { success: true, game: forfeitedGame } as const;
   }
-  return { success: true, game };
+  return { success: true, game } as const;
 }
