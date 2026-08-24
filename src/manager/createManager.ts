@@ -10,7 +10,6 @@ import {
   playCardFaceDown,
   playCardFaceUp,
   replenishDeck,
-  sendChat,
   startGame,
 } from "../game/index.js";
 
@@ -21,7 +20,6 @@ export const createManager = createManagerFactory({
   getEventsAndClearAcknowledged,
   joinGame,
   leaveGame,
-  sendChat,
   startGame,
   createCustomActions: (games) => ({
     collectCards: (gameId: string, playerId: string) => {

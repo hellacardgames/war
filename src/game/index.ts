@@ -9,7 +9,6 @@ export { leaveGame } from "./actions/leaveGame.js";
 export { playCardFaceDown } from "./actions/playCardFaceDown.js";
 export { playCardFaceUp } from "./actions/playCardFaceUp.js";
 export { replenishDeck } from "./actions/replenishDeck.js";
-export { sendChat } from "./actions/sendChat.js";
 export { startGame } from "./actions/startGame.js";
 
 export type { Card } from "./types/Card.js";
