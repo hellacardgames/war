@@ -3,7 +3,6 @@ export { MAX_PLAYERS } from "./constants.js";
 export { collectCards } from "./actions/collectCards.js";
 export { createGame } from "./actions/createGame.js";
 export { getClientStateAndClearEvents } from "./actions/getClientStateAndClearEvents.js";
-export { getEventsAndClearAcknowledged } from "./actions/getEventsAndClearAcknowledged.js";
 export { joinGame } from "./actions/joinGame.js";
 export { leaveGame } from "./actions/leaveGame.js";
 export { playCardFaceDown } from "./actions/playCardFaceDown.js";
