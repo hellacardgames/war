@@ -1,11 +1,14 @@
 import { emitEvent } from "../lib/emitEvent.js";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
-import type { CompletedGame, StartedGame } from "../types/Game.js";
+import type { CompletedGame, Game } from "../types/Game.js";
 
-export function collectCards(game: StartedGame, playerId: string) {
+export function collectCards(game: Game, playerId: string) {
   const player = game.players.find((p) => p.id === playerId);
   if (!player) {
     return { success: false, error: "playerNotFound" } as const;
+  }
+  if (game.status !== "started") {
+    return { success: false, error: "invalidStatus" } as const;
   }
   if (player.battlePile.length % 2 !== 1) {
     return { success: false, error: "invalidMove" } as const;

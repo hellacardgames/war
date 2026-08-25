@@ -3,12 +3,15 @@ import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import { canPlayCardFaceUp } from "../lib/canPlayCardFaceUp.js";
 import { canPlayCardFaceDown } from "../lib/canPlayCardFaceDown.js";
 import { shuffleCards } from "../lib/shuffleCards.js";
-import type { StartedGame } from "../types/Game.js";
+import type { Game } from "../types/Game.js";
 
-export function replenishDeck(game: StartedGame, playerId: string) {
+export function replenishDeck(game: Game, playerId: string) {
   const player = game.players.find((p) => p.id === playerId);
   if (!player) {
     return { success: false, error: "playerNotFound" } as const;
+  }
+  if (game.status !== "started") {
+    return { success: false, error: "invalidStatus" } as const;
   }
   if (!(canPlayCardFaceDown(player, game) || canPlayCardFaceUp(player))) {
     return { success: false, error: "invalidMove" } as const;

@@ -1,12 +1,15 @@
 import { emitEvent } from "../lib/emitEvent.js";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import { canPlayCardFaceDown } from "../lib/canPlayCardFaceDown.js";
-import type { StartedGame } from "../types/Game.js";
+import type { Game } from "../types/Game.js";
 
-export function playCardFaceDown(game: StartedGame, playerId: string) {
+export function playCardFaceDown(game: Game, playerId: string) {
   const player = game.players.find((p) => p.id === playerId);
   if (!player) {
     return { success: false, error: "playerNotFound" } as const;
+  }
+  if (game.status !== "started") {
+    return { success: false, error: "invalidStatus" } as const;
   }
   if (!canPlayCardFaceDown(player, game)) {
     return { success: false, error: "invalidMove" } as const;

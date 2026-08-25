@@ -29,9 +29,6 @@ export const createManager = createManagerFactory({
       if (!game) {
         return { success: false, error: "gameNotFound" } as const;
       }
-      if (game.status !== "started") {
-        return { success: false, error: "invalidStatus" } as const;
-      }
       const result = collectCards(game, playerId);
       if (!result.success) {
         return { success: false, error: result.error } as const;
@@ -43,9 +40,6 @@ export const createManager = createManagerFactory({
       const game = games.get(gameId);
       if (!game) {
         return { success: false, error: "gameNotFound" } as const;
-      }
-      if (game.status !== "started") {
-        return { success: false, error: "invalidStatus" } as const;
       }
       const result = playCardFaceDown(game, playerId);
       if (!result.success) {
@@ -59,9 +53,6 @@ export const createManager = createManagerFactory({
       if (!game) {
         return { success: false, error: "gameNotFound" } as const;
       }
-      if (game.status !== "started") {
-        return { success: false, error: "invalidStatus" } as const;
-      }
       const result = playCardFaceUp(game, playerId);
       if (!result.success) {
         return { success: false, error: result.error } as const;
@@ -73,9 +64,6 @@ export const createManager = createManagerFactory({
       const game = games.get(gameId);
       if (!game) {
         return { success: false, error: "gameNotFound" } as const;
-      }
-      if (game.status !== "started") {
-        return { success: false, error: "invalidStatus" } as const;
       }
       const result = replenishDeck(game, playerId);
       if (!result.success) {
