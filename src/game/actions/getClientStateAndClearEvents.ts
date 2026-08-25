@@ -1,25 +1,21 @@
+import { getClientStateAndClearEventsFactory } from "@hellacardgames/lib";
 import type { ClientState } from "../types/ClientState.js";
 import type { Game } from "../types/Game.js";
 
-export function getClientStateAndClearEvents(game: Game, playerId: string) {
-  const player = game.players.find((p) => p.id === playerId);
-  if (!player) {
-    return { success: false, error: "playerNotFound" } as const;
-  }
-  const state: ClientState = {
-    status: game.status,
-    gameId: game.id,
-    playerId,
-    username: player.username,
-    players: game.players.map((p) => ({
-      username: p.username,
-      deckSize: p.deck.length,
-      capturePileSize: p.capturePile.length,
-      battlePile: p.battlePile,
-    })),
-    expiresAt: game.expiresAt,
-    chatMessages: game.chatMessages,
-  };
-  player.events.length = 0;
-  return { success: true, state, game } as const;
-}
+export const getClientStateAndClearEvents = getClientStateAndClearEventsFactory<
+  Game,
+  ClientState
+>((game, player) => ({
+  status: game.status,
+  gameId: game.id,
+  playerId: player.id,
+  username: player.username,
+  players: game.players.map((p) => ({
+    username: p.username,
+    deckSize: p.deck.length,
+    capturePileSize: p.capturePile.length,
+    battlePile: p.battlePile,
+  })),
+  expiresAt: game.expiresAt,
+  chatMessages: game.chatMessages,
+}));
