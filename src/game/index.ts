@@ -10,6 +10,8 @@ export { playCardFaceUp } from "./actions/playCardFaceUp.js";
 export { replenishDeck } from "./actions/replenishDeck.js";
 export { startGame } from "./actions/startGame.js";
 
+export { getEventsAndClearAcknowledged, sendChat } from "@hellacardgames/lib";
+
 export type { Card } from "./types/Card.js";
 export type { ChatMessage } from "./types/ChatMessage.js";
 export type { ClientState } from "./types/ClientState.js";
