@@ -23,10 +23,10 @@ export const createManager = createManagerFactory({
   leaveGame,
   sendChat,
   startGame,
-  addCustomActions: (wrapAction) => ({
-    collectCards: wrapAction(collectCards),
-    playCardFaceDown: wrapAction(playCardFaceDown),
-    playCardFaceUp: wrapAction(playCardFaceUp),
-    replenishDeck: wrapAction(replenishDeck),
-  }),
+  gameplayActions: {
+    collectCards,
+    playCardFaceDown,
+    playCardFaceUp,
+    replenishDeck,
+  },
 });
