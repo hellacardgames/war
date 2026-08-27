@@ -1,7 +1,7 @@
-import { createClient } from "./createClient.js";
-export { createClient };
+export { createClient } from "./createClient.js";
+import type { Client } from "./createClient.js";
 
-type Client = ReturnType<typeof createClient>;
+export type { Client };
 
 export type CollectCardsResult = Awaited<ReturnType<Client["collectCards"]>>;
 export type CreateGameResult = Awaited<ReturnType<Client["createGame"]>>;
