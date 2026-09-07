@@ -1,7 +1,9 @@
-import { emitEvent } from "../lib/emitEvent.js";
-import { shuffleCards } from "../lib/shuffleCards.js";
+import { emitEvent, shuffle, updatePlayer } from "@hellacardgames/lib";
 import { CARDS, EXPIRY_EXTENSION_MS, MIN_PLAYERS } from "../constants.js";
-import type { Game, StartedGame } from "../types/Game.js";
+import { requirePlayerOne } from "../lib/requirePlayerOne.js";
+import { requirePlayerTwo } from "../lib/requirePlayerTwo.js";
+import { transitionGameToStarted } from "../lib/transitionGameToStarted.js";
+import type { Game } from "../types/Game.js";
 
 export function startGame(game: Game, playerId: string) {
   const player = game.players.find((p) => p.id === playerId);
@@ -17,35 +19,41 @@ export function startGame(game: Game, playerId: string) {
   if (game.players.length < MIN_PLAYERS) {
     return { success: false, error: "minPlayersNotReached" } as const;
   }
-  const deck = [...CARDS];
-  shuffleCards(deck);
-  let playerIndex = 0;
-  for (const card of deck) {
-    const player = game.players[playerIndex]!;
-    player.deck.push(card);
-    playerIndex = (playerIndex + 1) % game.players.length;
-  }
-  const playerOne = game.players[0]!;
-  const playerTwo = game.players[1]!;
-  emitEvent(game, {
+
+  const deck = shuffle(CARDS);
+
+  const playerOne = requirePlayerOne(game);
+  const playerOneDeck = deck.filter((_, index) => index % 2 === 0);
+  game = updatePlayer(game, playerOne.id, (p) => ({
+    ...p,
+    deck: playerOneDeck,
+  }));
+  game = emitEvent(game, {
     type: "deckInitialized",
     username: playerOne.username,
-    numCards: playerOne.deck.length,
+    numCards: playerOneDeck.length,
   });
-  emitEvent(game, {
+
+  const playerTwo = requirePlayerTwo(game);
+  const playerTwoDeck = deck.filter((_, index) => index % 2 === 1);
+  game = updatePlayer(game, playerTwo.id, (p) => ({
+    ...p,
+    deck: playerTwoDeck,
+  }));
+  game = emitEvent(game, {
     type: "deckInitialized",
     username: playerTwo.username,
-    numCards: playerTwo.deck.length,
+    numCards: playerTwoDeck.length,
   });
-  const startedGame: StartedGame = {
-    ...game,
-    status: "started",
-    expiresAt: Date.now() + EXPIRY_EXTENSION_MS,
-  };
-  emitEvent(startedGame, { type: "gameStarted" });
-  emitEvent(startedGame, {
+
+  game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
+  game = emitEvent(game, {
     type: "expirationUpdated",
-    expiresAt: startedGame.expiresAt,
+    expiresAt: game.expiresAt,
   });
-  return { success: true, game: startedGame } as const;
+
+  game = transitionGameToStarted(game);
+  game = emitEvent(game, { type: "gameStarted" });
+
+  return { success: true, game } as const;
 }

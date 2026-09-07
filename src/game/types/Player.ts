@@ -5,8 +5,8 @@ export type Player = {
   readonly id: string;
   readonly userId: string;
   readonly username: string;
-  readonly events: GameEvent[];
-  readonly deck: Card[];
-  readonly capturePile: Card[];
-  readonly battlePile: Card[];
+  readonly events: readonly GameEvent[];
+  readonly deck: readonly Card[];
+  readonly capturePile: readonly Card[];
+  readonly battlePile: readonly Card[];
 };

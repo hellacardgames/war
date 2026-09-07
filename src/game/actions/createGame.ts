@@ -12,6 +12,7 @@ export function createGame(userId: string, username: string) {
     capturePile: [],
     battlePile: [],
   };
+
   const createdAt = Date.now();
   const game: CreatedGame = {
     status: "created",
@@ -21,5 +22,6 @@ export function createGame(userId: string, username: string) {
     chatMessages: [],
     players: [player],
   };
+
   return { game, playerId: player.id } as const;
 }

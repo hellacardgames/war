@@ -1,6 +1,9 @@
-import { emitEvent } from "../lib/emitEvent.js";
+import { emitEvent, updatePlayer } from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
-import type { CompletedGame, Game } from "../types/Game.js";
+import { isOutOfCards } from "../lib/isOutOfCards.js";
+import { requireOtherPlayer } from "../lib/requireOtherPlayer.js";
+import { transitionGameToCompleted } from "../lib/transitionGameToCompleted.js";
+import type { Game } from "../types/Game.js";
 
 export function collectCards(game: Game, playerId: string) {
   const player = game.players.find((p) => p.id === playerId);
@@ -13,13 +16,13 @@ export function collectCards(game: Game, playerId: string) {
   if (player.battlePile.length % 2 !== 1) {
     return { success: false, error: "invalidMove" } as const;
   }
-  const otherPlayer = game.players.find((p) => p !== player)!;
+  const otherPlayer = requireOtherPlayer(game, player);
   if (player.battlePile.length < otherPlayer.battlePile.length) {
     return { success: false, error: "invalidMove" } as const;
   }
   if (
     player.battlePile.length > otherPlayer.battlePile.length &&
-    (otherPlayer.deck.length > 0 || otherPlayer.capturePile.length > 0)
+    !isOutOfCards(otherPlayer)
   ) {
     return { success: false, error: "invalidMove" } as const;
   }
@@ -32,29 +35,41 @@ export function collectCards(game: Game, playerId: string) {
     }
     if (
       playerCard.rank === otherPlayerCard.rank &&
-      (otherPlayer.deck.length > 0 || otherPlayer.capturePile.length > 0)
+      !isOutOfCards(otherPlayer)
     ) {
       return { success: false, error: "invalidMove" } as const;
     }
   }
-  game.expiresAt = Date.now() + EXPIRY_EXTENSION_MS;
-  emitEvent(game, { type: "expirationUpdated", expiresAt: game.expiresAt });
+
+  game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
+  game = emitEvent(game, {
+    type: "expirationUpdated",
+    expiresAt: game.expiresAt,
+  });
+
   const collectedCards = [...otherPlayer.battlePile, ...player.battlePile];
-  player.capturePile.push(...collectedCards);
-  otherPlayer.battlePile.length = 0;
-  player.battlePile.length = 0;
-  emitEvent(game, {
+
+  game = updatePlayer(game, player.id, (p) => ({
+    ...p,
+    capturePile: [...p.capturePile, ...collectedCards],
+    battlePile: [],
+  }));
+
+  game = updatePlayer(game, otherPlayer.id, (p) => ({
+    ...p,
+    battlePile: [],
+  }));
+
+  game = emitEvent(game, {
     type: "cardsCollected",
     username: player.username,
     numCards: collectedCards.length,
   });
-  if (otherPlayer.deck.length === 0 && otherPlayer.capturePile.length === 0) {
-    emitEvent(game, { type: "gameCompleted" });
-    const completedGame: CompletedGame = {
-      ...game,
-      status: "completed",
-    };
-    return { success: true, game: completedGame } as const;
+
+  if (isOutOfCards(otherPlayer)) {
+    game = transitionGameToCompleted(game);
+    game = emitEvent(game, { type: "gameCompleted" });
   }
+
   return { success: true, game } as const;
 }

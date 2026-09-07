@@ -1,6 +1,12 @@
-import { emitEvent } from "../lib/emitEvent.js";
+import {
+  addItemToCollection,
+  emitEvent,
+  takeLastItemFromCollection,
+  updatePlayer,
+} from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import { canPlayCardFaceUp } from "../lib/canPlayCardFaceUp.js";
+import { isDeckEmpty } from "../lib/isDeckEmpty.js";
 import type { Game } from "../types/Game.js";
 
 export function playCardFaceUp(game: Game, playerId: string) {
@@ -14,13 +20,31 @@ export function playCardFaceUp(game: Game, playerId: string) {
   if (!canPlayCardFaceUp(player)) {
     return { success: false, error: "invalidMove" } as const;
   }
-  if (player.deck.length === 0) {
+  if (isDeckEmpty(player)) {
     return { success: false, error: "deckEmpty" } as const;
   }
-  game.expiresAt = Date.now() + EXPIRY_EXTENSION_MS;
-  emitEvent(game, { type: "expirationUpdated", expiresAt: game.expiresAt });
-  const card = player.deck.pop()!;
-  player.battlePile.push(card);
-  emitEvent(game, { type: "cardPlayed", username: player.username, card });
+
+  game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
+  game = emitEvent(game, {
+    type: "expirationUpdated",
+    expiresAt: game.expiresAt,
+  });
+
+  const { collection: newDeck, item: card } = takeLastItemFromCollection(
+    player.deck,
+  );
+
+  game = updatePlayer(game, player.id, (p) => ({
+    ...p,
+    deck: newDeck,
+    battlePile: addItemToCollection(p.battlePile, card),
+  }));
+
+  game = emitEvent(game, {
+    type: "cardPlayed",
+    username: player.username,
+    card,
+  });
+
   return { success: true, game } as const;
 }
