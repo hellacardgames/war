@@ -1,7 +1,10 @@
-import { emitEvent, updatePlayer } from "@hellacardgames/lib";
+import {
+  emitEvent,
+  requireOtherPlayer,
+  updatePlayer,
+} from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import { isOutOfCards } from "../lib/isOutOfCards.js";
-import { requireOtherPlayer } from "../lib/requireOtherPlayer.js";
 import { transitionGameToCompleted } from "../lib/transitionGameToCompleted.js";
 import type { Game } from "../types/Game.js";
 
@@ -16,7 +19,7 @@ export function collectCards(game: Game, playerId: string) {
   if (player.battlePile.length % 2 !== 1) {
     return { success: false, error: "invalidMove" } as const;
   }
-  const otherPlayer = requireOtherPlayer(game, player.id);
+  const { otherPlayer } = requireOtherPlayer(game, player.id);
   if (player.battlePile.length < otherPlayer.battlePile.length) {
     return { success: false, error: "invalidMove" } as const;
   }

@@ -1,10 +1,14 @@
-import { emitEvent, shuffle, updatePlayer } from "@hellacardgames/lib";
+import {
+  emitEvent,
+  requireOtherPlayer,
+  shuffle,
+  updatePlayer,
+} from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import { canPlayCardFaceDown } from "../lib/canPlayCardFaceDown.js";
 import { canPlayCardFaceUp } from "../lib/canPlayCardFaceUp.js";
 import { isCapturePileEmpty } from "../lib/isCapturePileEmpty.js";
 import { isDeckEmpty } from "../lib/isDeckEmpty.js";
-import { requireOtherPlayer } from "../lib/requireOtherPlayer.js";
 import type { Game } from "../types/Game.js";
 
 export function replenishDeck(game: Game, playerId: string) {
@@ -15,7 +19,7 @@ export function replenishDeck(game: Game, playerId: string) {
   if (game.status !== "started") {
     return { success: false, error: "invalidStatus" } as const;
   }
-  const otherPlayer = requireOtherPlayer(game, player.id);
+  const { otherPlayer } = requireOtherPlayer(game, player.id);
   if (!(
     canPlayCardFaceDown(player, otherPlayer) || canPlayCardFaceUp(player)
   )) {
