@@ -26,12 +26,6 @@ export function playCardFaceDown(game: Game, playerId: string) {
     return { success: false, error: "deckEmpty" } as const;
   }
 
-  game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
-  game = emitEvent(game, {
-    type: "expirationUpdated",
-    expiresAt: game.expiresAt,
-  });
-
   const { collection: newDeck, item: card } = takeLastItemFromCollection(
     player.deck,
   );
@@ -46,6 +40,12 @@ export function playCardFaceDown(game: Game, playerId: string) {
     type: "cardPlayed",
     username: player.username,
     card,
+  });
+
+  game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
+  game = emitEvent(game, {
+    type: "expirationUpdated",
+    expiresAt: game.expiresAt,
   });
 
   return { success: true, game } as const;

@@ -32,12 +32,6 @@ export function replenishDeck(game: Game, playerId: string) {
     return { success: false, error: "capturePileEmpty" } as const;
   }
 
-  game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
-  game = emitEvent(game, {
-    type: "expirationUpdated",
-    expiresAt: game.expiresAt,
-  });
-
   const newDeck = shuffle(player.capturePile);
   game = updatePlayer(game, player.id, (p) => ({
     ...p,
@@ -49,6 +43,12 @@ export function replenishDeck(game: Game, playerId: string) {
     type: "deckReplenished",
     username: player.username,
     numCards: newDeck.length,
+  });
+
+  game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
+  game = emitEvent(game, {
+    type: "expirationUpdated",
+    expiresAt: game.expiresAt,
   });
 
   return { success: true, game } as const;

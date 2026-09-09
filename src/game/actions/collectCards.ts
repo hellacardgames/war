@@ -44,12 +44,6 @@ export function collectCards(game: Game, playerId: string) {
     }
   }
 
-  game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
-  game = emitEvent(game, {
-    type: "expirationUpdated",
-    expiresAt: game.expiresAt,
-  });
-
   const collectedCards = [...otherPlayer.battlePile, ...player.battlePile];
 
   game = updatePlayer(game, player.id, (p) => ({
@@ -73,6 +67,12 @@ export function collectCards(game: Game, playerId: string) {
     game = transitionGameToCompleted(game);
     game = emitEvent(game, { type: "gameCompleted" });
   }
+
+  game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
+  game = emitEvent(game, {
+    type: "expirationUpdated",
+    expiresAt: game.expiresAt,
+  });
 
   return { success: true, game } as const;
 }
