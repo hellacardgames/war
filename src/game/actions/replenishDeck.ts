@@ -15,7 +15,7 @@ export function replenishDeck(game: Game, playerId: string) {
   if (game.status !== "started") {
     return { success: false, error: "invalidStatus" } as const;
   }
-  const otherPlayer = requireOtherPlayer(game, player);
+  const otherPlayer = requireOtherPlayer(game, player.id);
   if (!(
     canPlayCardFaceDown(player, otherPlayer) || canPlayCardFaceUp(player)
   )) {

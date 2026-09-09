@@ -16,7 +16,7 @@ export function collectCards(game: Game, playerId: string) {
   if (player.battlePile.length % 2 !== 1) {
     return { success: false, error: "invalidMove" } as const;
   }
-  const otherPlayer = requireOtherPlayer(game, player);
+  const otherPlayer = requireOtherPlayer(game, player.id);
   if (player.battlePile.length < otherPlayer.battlePile.length) {
     return { success: false, error: "invalidMove" } as const;
   }
