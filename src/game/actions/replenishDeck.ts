@@ -5,8 +5,7 @@ import {
   updatePlayer,
 } from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
-import { canPlayCardFaceDown } from "../lib/canPlayCardFaceDown.js";
-import { canPlayCardFaceUp } from "../lib/canPlayCardFaceUp.js";
+import { canPlayCard } from "../lib/canPlayCard.js";
 import { isCapturePileEmpty } from "../lib/isCapturePileEmpty.js";
 import { isDeckEmpty } from "../lib/isDeckEmpty.js";
 import type { Game } from "../types/Game.js";
@@ -20,9 +19,7 @@ export function replenishDeck(game: Game, playerId: string) {
     return { success: false, error: "invalidStatus" } as const;
   }
   const { otherPlayer } = requireOtherPlayer(game, player.id);
-  if (!(
-    canPlayCardFaceDown(player, otherPlayer) || canPlayCardFaceUp(player)
-  )) {
+  if (!canPlayCard(player, otherPlayer)) {
     return { success: false, error: "invalidMove" } as const;
   }
   if (!isDeckEmpty(player)) {
