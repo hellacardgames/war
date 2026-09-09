@@ -1,5 +1,6 @@
 import {
   emitEvent,
+  peekLastItemInCollection,
   requireOtherPlayer,
   updatePlayer,
 } from "@hellacardgames/lib";
@@ -30,9 +31,8 @@ export function collectCards(game: Game, playerId: string) {
     return { success: false, error: "invalidMove" } as const;
   }
   if (player.battlePile.length === otherPlayer.battlePile.length) {
-    const playerCard = player.battlePile[player.battlePile.length - 1]!;
-    const otherPlayerCard =
-      otherPlayer.battlePile[otherPlayer.battlePile.length - 1]!;
+    const playerCard = peekLastItemInCollection(player.battlePile);
+    const otherPlayerCard = peekLastItemInCollection(otherPlayer.battlePile);
     if (playerCard.rank < otherPlayerCard.rank) {
       return { success: false, error: "invalidMove" } as const;
     }
