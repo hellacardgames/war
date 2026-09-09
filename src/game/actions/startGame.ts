@@ -20,6 +20,9 @@ export function startGame(game: Game, playerId: string) {
     return { success: false, error: "minPlayersNotReached" } as const;
   }
 
+  game = transitionGameToStarted(game);
+  game = emitEvent(game, { type: "gameStarted" });
+
   const deck = shuffle(CARDS);
 
   const playerOne = requirePlayerOne(game);
@@ -51,9 +54,6 @@ export function startGame(game: Game, playerId: string) {
     type: "expirationUpdated",
     expiresAt: game.expiresAt,
   });
-
-  game = transitionGameToStarted(game);
-  game = emitEvent(game, { type: "gameStarted" });
 
   return { success: true, game } as const;
 }
