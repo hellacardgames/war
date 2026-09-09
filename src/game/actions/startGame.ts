@@ -1,7 +1,11 @@
-import { emitEvent, shuffle, updatePlayer } from "@hellacardgames/lib";
+import {
+  emitEvent,
+  requirePlayerOne,
+  requirePlayerTwo,
+  shuffle,
+  updatePlayer,
+} from "@hellacardgames/lib";
 import { CARDS, EXPIRY_EXTENSION_MS, MIN_PLAYERS } from "../constants.js";
-import { requirePlayerOne } from "../lib/requirePlayerOne.js";
-import { requirePlayerTwo } from "../lib/requirePlayerTwo.js";
 import { transitionGameToStarted } from "../lib/transitionGameToStarted.js";
 import type { Game } from "../types/Game.js";
 
