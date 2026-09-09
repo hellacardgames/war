@@ -1,5 +1,6 @@
 import {
   emitEvent,
+  isPlayerAdmin,
   requirePlayerOne,
   requirePlayerTwo,
   shuffle,
@@ -14,7 +15,7 @@ export function startGame(game: Game, playerId: string) {
   if (!player) {
     return { success: false, error: "playerNotFound" } as const;
   }
-  if (game.players.indexOf(player) !== 0) {
+  if (!isPlayerAdmin(game, player.id)) {
     return { success: false, error: "playerNotAdmin" } as const;
   }
   if (game.status !== "created") {
