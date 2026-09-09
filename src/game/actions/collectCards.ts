@@ -1,5 +1,6 @@
 import {
   emitEvent,
+  isCollectionLengthEven,
   peekLastItemInCollection,
   requireOtherPlayer,
   updatePlayer,
@@ -17,7 +18,7 @@ export function collectCards(game: Game, playerId: string) {
   if (game.status !== "started") {
     return { success: false, error: "invalidStatus" } as const;
   }
-  if (player.battlePile.length % 2 !== 1) {
+  if (isCollectionLengthEven(player.battlePile)) {
     return { success: false, error: "invalidMove" } as const;
   }
   const { otherPlayer } = requireOtherPlayer(game, player.id);
