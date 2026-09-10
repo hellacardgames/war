@@ -1,6 +1,8 @@
 import {
   emitEvent,
   isPlayerAdmin,
+  peekItemsAtEvenIndices,
+  peekItemsAtOddIndices,
   requirePlayerOne,
   requirePlayerTwo,
   shuffle,
@@ -31,7 +33,7 @@ export function startGame(game: Game, playerId: string) {
   const deck = shuffle(CARDS);
 
   const playerOne = requirePlayerOne(game);
-  const playerOneDeck = deck.filter((_, index) => index % 2 === 0);
+  const playerOneDeck = peekItemsAtEvenIndices(deck);
   game = updatePlayer(game, playerOne.id, (p) => ({
     ...p,
     deck: playerOneDeck,
@@ -43,7 +45,7 @@ export function startGame(game: Game, playerId: string) {
   });
 
   const playerTwo = requirePlayerTwo(game);
-  const playerTwoDeck = deck.filter((_, index) => index % 2 === 1);
+  const playerTwoDeck = peekItemsAtOddIndices(deck);
   game = updatePlayer(game, playerTwo.id, (p) => ({
     ...p,
     deck: playerTwoDeck,
