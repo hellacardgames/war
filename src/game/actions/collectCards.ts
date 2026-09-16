@@ -1,5 +1,6 @@
 import {
   emitEvent,
+  getRankValue,
   isCollectionLengthEven,
   peekLastItemInCollection,
   requireOtherPlayer,
@@ -9,7 +10,6 @@ import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import { isOutOfCards } from "../lib/isOutOfCards.js";
 import { transitionGameToCompleted } from "../lib/transitionGameToCompleted.js";
 import type { Game } from "../types/Game.js";
-import { getRankValue } from "../lib/getRankValue.js";
 
 export function collectCards(game: Game, playerId: string) {
   const player = game.players.find((p) => p.id === playerId);

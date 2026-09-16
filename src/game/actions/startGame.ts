@@ -1,4 +1,5 @@
 import {
+  CARDS,
   emitEvent,
   isPlayerAdmin,
   peekItemsAtEvenIndices,
@@ -8,7 +9,7 @@ import {
   shuffle,
   updatePlayer,
 } from "@hellacardgames/lib";
-import { CARDS, EXPIRY_EXTENSION_MS, MIN_PLAYERS } from "../constants.js";
+import { EXPIRY_EXTENSION_MS, MIN_PLAYERS } from "../constants.js";
 import { transitionGameToStarted } from "../lib/transitionGameToStarted.js";
 import type { Game } from "../types/Game.js";
 
