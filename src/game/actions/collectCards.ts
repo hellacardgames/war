@@ -9,6 +9,7 @@ import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import { isOutOfCards } from "../lib/isOutOfCards.js";
 import { transitionGameToCompleted } from "../lib/transitionGameToCompleted.js";
 import type { Game } from "../types/Game.js";
+import { getRankValue } from "../lib/getRankValue.js";
 
 export function collectCards(game: Game, playerId: string) {
   const player = game.players.find((p) => p.id === playerId);
@@ -34,11 +35,13 @@ export function collectCards(game: Game, playerId: string) {
   if (player.battlePile.length === otherPlayer.battlePile.length) {
     const playerCard = peekLastItemInCollection(player.battlePile);
     const otherPlayerCard = peekLastItemInCollection(otherPlayer.battlePile);
-    if (playerCard.rank < otherPlayerCard.rank) {
+    const playerRankValue = getRankValue(playerCard.rank);
+    const otherPlayerRankValue = getRankValue(otherPlayerCard.rank);
+    if (playerRankValue < otherPlayerRankValue) {
       return { success: false, error: "invalidMove" } as const;
     }
     if (
-      playerCard.rank === otherPlayerCard.rank &&
+      playerRankValue === otherPlayerRankValue &&
       !isOutOfCards(otherPlayer)
     ) {
       return { success: false, error: "invalidMove" } as const;
