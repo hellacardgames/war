@@ -1,6 +1,8 @@
 import {
   CARDS,
   emitEvent,
+  emitEventToOtherPlayers,
+  emitEventToPlayer,
   peekItemsAtEvenIndices,
   peekItemsAtOddIndices,
   requirePlayerOne,
@@ -38,9 +40,12 @@ export function startGame(game: Game, playerId: string) {
     ...p,
     deck: playerOneDeck,
   }));
-  game = emitEvent(game, {
-    type: "deckInitialized",
-    username: playerOne.username,
+  game = emitEventToPlayer(game, playerOne.id, {
+    type: "playerDeckInitialized",
+    numCards: playerOneDeck.length,
+  });
+  game = emitEventToOtherPlayers(game, playerOne.id, {
+    type: "otherPlayerDeckInitialized",
     numCards: playerOneDeck.length,
   });
 
@@ -50,9 +55,12 @@ export function startGame(game: Game, playerId: string) {
     ...p,
     deck: playerTwoDeck,
   }));
-  game = emitEvent(game, {
-    type: "deckInitialized",
-    username: playerTwo.username,
+  game = emitEventToPlayer(game, playerTwo.id, {
+    type: "playerDeckInitialized",
+    numCards: playerTwoDeck.length,
+  });
+  game = emitEventToOtherPlayers(game, playerTwo.id, {
+    type: "otherPlayerDeckInitialized",
     numCards: playerTwoDeck.length,
   });
 

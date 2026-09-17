@@ -5,8 +5,8 @@ export type ClientState = {
   readonly status: "created" | "started" | "completed" | "forfeited";
   readonly gameId: string;
   readonly playerId: string;
-  readonly username: string;
-  readonly players: readonly Player[];
+  readonly player: Player;
+  readonly otherPlayer: Player | null;
   readonly adminUsername: string;
   readonly expiresAt: number;
   readonly chatMessages: readonly ChatMessage[];

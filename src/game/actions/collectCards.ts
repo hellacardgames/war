@@ -1,5 +1,7 @@
 import {
   emitEvent,
+  emitEventToOtherPlayers,
+  emitEventToPlayer,
   getRankValue,
   isCollectionLengthEven,
   peekLastItemInCollection,
@@ -61,9 +63,12 @@ export function collectCards(game: Game, playerId: string) {
     battlePile: [],
   }));
 
-  game = emitEvent(game, {
-    type: "cardsCollected",
-    username: player.username,
+  game = emitEventToPlayer(game, player.id, {
+    type: "playerCollectedCards",
+    numCards: collectedCards.length,
+  });
+  game = emitEventToOtherPlayers(game, player.id, {
+    type: "otherPlayerCollectedCards",
     numCards: collectedCards.length,
   });
 

@@ -1,5 +1,7 @@
 import {
   emitEvent,
+  emitEventToOtherPlayers,
+  emitEventToPlayer,
   requireOtherPlayer,
   shuffle,
   updatePlayer,
@@ -36,9 +38,12 @@ export function replenishDeck(game: Game, playerId: string) {
     capturePile: [],
   }));
 
-  game = emitEvent(game, {
-    type: "deckReplenished",
-    username: player.username,
+  game = emitEventToPlayer(game, player.id, {
+    type: "playerDeckReplenished",
+    numCards: newDeck.length,
+  });
+  game = emitEventToOtherPlayers(game, player.id, {
+    type: "otherPlayerDeckReplenished",
     numCards: newDeck.length,
   });
 

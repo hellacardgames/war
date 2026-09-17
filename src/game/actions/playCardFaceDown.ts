@@ -1,6 +1,8 @@
 import {
   addItemToCollection,
   emitEvent,
+  emitEventToOtherPlayers,
+  emitEventToPlayer,
   requireOtherPlayer,
   takeLastItemFromCollection,
   updatePlayer,
@@ -36,9 +38,9 @@ export function playCardFaceDown(game: Game, playerId: string) {
     battlePile: addItemToCollection(p.battlePile, card),
   }));
 
-  game = emitEvent(game, {
-    type: "cardPlayed",
-    username: player.username,
+  game = emitEventToPlayer(game, player.id, { type: "playerPlayedCard", card });
+  game = emitEventToOtherPlayers(game, player.id, {
+    type: "otherPlayerPlayedCard",
     card,
   });
 

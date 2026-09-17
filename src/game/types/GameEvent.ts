@@ -8,33 +8,9 @@ export type GameEvent =
       readonly username: string;
     }
   | {
-      readonly type: "cardPlayed";
-      readonly id: string;
-      readonly username: string;
-      readonly card: Card;
-    }
-  | {
-      readonly type: "cardsCollected";
-      readonly id: string;
-      readonly username: string;
-      readonly numCards: number;
-    }
-  | {
       readonly type: "chat";
       readonly id: string;
       readonly message: ChatMessage;
-    }
-  | {
-      readonly type: "deckInitialized";
-      readonly id: string;
-      readonly username: string;
-      readonly numCards: number;
-    }
-  | {
-      readonly type: "deckReplenished";
-      readonly id: string;
-      readonly username: string;
-      readonly numCards: number;
     }
   | {
       readonly type: "expirationUpdated";
@@ -54,12 +30,51 @@ export type GameEvent =
       readonly id: string;
     }
   | {
-      readonly type: "playerJoined";
+      readonly type: "otherPlayerCollectedCards";
+      readonly id: string;
+      readonly numCards: number;
+    }
+  | {
+      readonly type: "otherPlayerDeckInitialized";
+      readonly id: string;
+      readonly numCards: number;
+    }
+  | {
+      readonly type: "otherPlayerDeckReplenished";
+      readonly id: string;
+      readonly numCards: number;
+    }
+  | {
+      readonly type: "otherPlayerJoined";
       readonly id: string;
       readonly username: string;
     }
   | {
-      readonly type: "playerLeft";
+      readonly type: "otherPlayerLeft";
       readonly id: string;
-      readonly username: string;
+    }
+  | {
+      readonly type: "otherPlayerPlayedCard";
+      readonly id: string;
+      readonly card: Card;
+    }
+  | {
+      readonly type: "playerCollectedCards";
+      readonly id: string;
+      readonly numCards: number;
+    }
+  | {
+      readonly type: "playerDeckInitialized";
+      readonly id: string;
+      readonly numCards: number;
+    }
+  | {
+      readonly type: "playerDeckReplenished";
+      readonly id: string;
+      readonly numCards: number;
+    }
+  | {
+      readonly type: "playerPlayedCard";
+      readonly id: string;
+      readonly card: Card;
     };
