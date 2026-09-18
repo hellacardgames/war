@@ -1,9 +1,10 @@
 import {
   emitEvent,
-  emitEventToOtherPlayers,
+  emitEventToOtherPlayer,
   emitEventToPlayer,
-  requireOtherPlayer,
+  getOtherPlayer,
   shuffle,
+  tryGetPlayer,
   updatePlayer,
 } from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
@@ -13,14 +14,14 @@ import { isDeckEmpty } from "../lib/isDeckEmpty.js";
 import type { Game } from "../types/Game.js";
 
 export function replenishDeck(game: Game, playerId: string) {
-  const player = game.players.find((p) => p.id === playerId);
+  const { player } = tryGetPlayer(game, playerId);
   if (!player) {
     return { success: false, error: "playerNotFound" } as const;
   }
   if (game.status !== "started") {
     return { success: false, error: "invalidStatus" } as const;
   }
-  const { otherPlayer } = requireOtherPlayer(game, player.id);
+  const { otherPlayer } = getOtherPlayer(game, player.id);
   if (!canPlayCard(player, otherPlayer)) {
     return { success: false, error: "invalidMove" } as const;
   }
@@ -42,7 +43,7 @@ export function replenishDeck(game: Game, playerId: string) {
     type: "playerDeckReplenished",
     numCards: newDeck.length,
   });
-  game = emitEventToOtherPlayers(game, player.id, {
+  game = emitEventToOtherPlayer(game, player.id, {
     type: "otherPlayerDeckReplenished",
     numCards: newDeck.length,
   });

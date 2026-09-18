@@ -1,9 +1,10 @@
 import {
   addItemToCollection,
   emitEvent,
-  emitEventToOtherPlayers,
+  emitEventToOtherPlayer,
   emitEventToPlayer,
   takeLastItemFromCollection,
+  tryGetPlayer,
   updatePlayer,
 } from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
@@ -12,7 +13,7 @@ import { isDeckEmpty } from "../lib/isDeckEmpty.js";
 import type { Game } from "../types/Game.js";
 
 export function playCardFaceUp(game: Game, playerId: string) {
-  const player = game.players.find((p) => p.id === playerId);
+  const { player } = tryGetPlayer(game, playerId);
   if (!player) {
     return { success: false, error: "playerNotFound" } as const;
   }
@@ -37,7 +38,7 @@ export function playCardFaceUp(game: Game, playerId: string) {
   }));
 
   game = emitEventToPlayer(game, player.id, { type: "playerPlayedCard", card });
-  game = emitEventToOtherPlayers(game, player.id, {
+  game = emitEventToOtherPlayer(game, player.id, {
     type: "otherPlayerPlayedCard",
     card,
   });

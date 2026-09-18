@@ -1,13 +1,14 @@
 import {
   CARDS,
   emitEvent,
-  emitEventToOtherPlayers,
+  emitEventToOtherPlayer,
   emitEventToPlayer,
+  getPlayerOne,
+  getPlayerTwo,
   peekItemsAtEvenIndices,
   peekItemsAtOddIndices,
-  requirePlayerOne,
-  requirePlayerTwo,
   shuffle,
+  tryGetPlayer,
   updatePlayer,
 } from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS, MIN_PLAYERS } from "../constants.js";
@@ -15,7 +16,7 @@ import { transitionGameToStarted } from "../lib/transitionGameToStarted.js";
 import type { Game } from "../types/Game.js";
 
 export function startGame(game: Game, playerId: string) {
-  const player = game.players.find((p) => p.id === playerId);
+  const { player } = tryGetPlayer(game, playerId);
   if (!player) {
     return { success: false, error: "playerNotFound" } as const;
   }
@@ -34,7 +35,7 @@ export function startGame(game: Game, playerId: string) {
 
   const deck = shuffle(CARDS);
 
-  const playerOne = requirePlayerOne(game);
+  const playerOne = getPlayerOne(game);
   const playerOneDeck = peekItemsAtEvenIndices(deck);
   game = updatePlayer(game, playerOne.id, (p) => ({
     ...p,
@@ -44,12 +45,12 @@ export function startGame(game: Game, playerId: string) {
     type: "playerDeckInitialized",
     numCards: playerOneDeck.length,
   });
-  game = emitEventToOtherPlayers(game, playerOne.id, {
+  game = emitEventToOtherPlayer(game, playerOne.id, {
     type: "otherPlayerDeckInitialized",
     numCards: playerOneDeck.length,
   });
 
-  const playerTwo = requirePlayerTwo(game);
+  const playerTwo = getPlayerTwo(game);
   const playerTwoDeck = peekItemsAtOddIndices(deck);
   game = updatePlayer(game, playerTwo.id, (p) => ({
     ...p,
@@ -59,7 +60,7 @@ export function startGame(game: Game, playerId: string) {
     type: "playerDeckInitialized",
     numCards: playerTwoDeck.length,
   });
-  game = emitEventToOtherPlayers(game, playerTwo.id, {
+  game = emitEventToOtherPlayer(game, playerTwo.id, {
     type: "otherPlayerDeckInitialized",
     numCards: playerTwoDeck.length,
   });

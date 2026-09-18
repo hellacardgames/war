@@ -1,11 +1,12 @@
 import {
   emitEvent,
-  emitEventToOtherPlayers,
+  emitEventToOtherPlayer,
   emitEventToPlayer,
+  getOtherPlayer,
   getRankValue,
   isCollectionLengthEven,
   peekLastItemInCollection,
-  requireOtherPlayer,
+  tryGetPlayer,
   updatePlayer,
 } from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
@@ -14,7 +15,7 @@ import { transitionGameToCompleted } from "../lib/transitionGameToCompleted.js";
 import type { Game } from "../types/Game.js";
 
 export function collectCards(game: Game, playerId: string) {
-  const player = game.players.find((p) => p.id === playerId);
+  const { player } = tryGetPlayer(game, playerId);
   if (!player) {
     return { success: false, error: "playerNotFound" } as const;
   }
@@ -24,7 +25,7 @@ export function collectCards(game: Game, playerId: string) {
   if (isCollectionLengthEven(player.battlePile)) {
     return { success: false, error: "invalidMove" } as const;
   }
-  const { otherPlayer } = requireOtherPlayer(game, player.id);
+  const { otherPlayer } = getOtherPlayer(game, player.id);
   if (player.battlePile.length < otherPlayer.battlePile.length) {
     return { success: false, error: "invalidMove" } as const;
   }
@@ -67,7 +68,7 @@ export function collectCards(game: Game, playerId: string) {
     type: "playerCollectedCards",
     numCards: collectedCards.length,
   });
-  game = emitEventToOtherPlayers(game, player.id, {
+  game = emitEventToOtherPlayer(game, player.id, {
     type: "otherPlayerCollectedCards",
     numCards: collectedCards.length,
   });
