@@ -3,7 +3,7 @@ import {
   emitEventToOtherPlayer,
   emitEventToPlayer,
   getOtherPlayer,
-  getRankValue,
+  getAceHighRankValue,
   isCollectionLengthEven,
   peekLastItemInCollection,
   tryGetPlayer,
@@ -38,8 +38,8 @@ export function collectCards(game: Game, playerId: string) {
   if (player.battlePile.length === otherPlayer.battlePile.length) {
     const playerCard = peekLastItemInCollection(player.battlePile);
     const otherPlayerCard = peekLastItemInCollection(otherPlayer.battlePile);
-    const playerRankValue = getRankValue(playerCard.rank);
-    const otherPlayerRankValue = getRankValue(otherPlayerCard.rank);
+    const playerRankValue = getAceHighRankValue(playerCard.rank);
+    const otherPlayerRankValue = getAceHighRankValue(otherPlayerCard.rank);
     if (playerRankValue < otherPlayerRankValue) {
       return { success: false, error: "invalidMove" } as const;
     }
