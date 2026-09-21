@@ -1,8 +1,8 @@
 import {
-  getLastIndexInCollection,
-  isCollectionLengthEven,
-  peekLastItemInCollection,
-  tryPeekItemInCollection,
+  getLastIndex,
+  isLengthEven,
+  peekLastItem,
+  tryPeekItem,
 } from "@hellacardgames/lib";
 import type { Player } from "../types/Player.js";
 
@@ -10,14 +10,14 @@ export function canPlayCardFaceDown(
   player: Player,
   otherPlayer: Player,
 ): boolean {
-  if (isCollectionLengthEven(player.battlePile)) {
+  if (isLengthEven(player.battlePile)) {
     return false;
   }
 
-  const playerCard = peekLastItemInCollection(player.battlePile);
-  const otherPlayerCard = tryPeekItemInCollection(
+  const playerCard = peekLastItem(player.battlePile);
+  const otherPlayerCard = tryPeekItem(
     otherPlayer.battlePile,
-    getLastIndexInCollection(player.battlePile),
+    getLastIndex(player.battlePile),
   );
 
   if (!otherPlayerCard || playerCard.rank !== otherPlayerCard.rank) {

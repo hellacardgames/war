@@ -1,10 +1,10 @@
 import {
-  addItemToCollection,
+  addItem,
   emitEvent,
   emitEventToOtherPlayer,
   emitEventToPlayer,
   getOtherPlayer,
-  takeLastItemFromCollection,
+  takeLastItem,
   tryGetPlayer,
   updatePlayer,
 } from "@hellacardgames/lib";
@@ -29,14 +29,12 @@ export function playCardFaceDown(game: Game, playerId: string) {
     return { success: false, error: "deckEmpty" } as const;
   }
 
-  const { collection: newDeck, item: card } = takeLastItemFromCollection(
-    player.deck,
-  );
+  const { collection: newDeck, item: card } = takeLastItem(player.deck);
 
   game = updatePlayer(game, player.id, (p) => ({
     ...p,
     deck: newDeck,
-    battlePile: addItemToCollection(p.battlePile, card),
+    battlePile: addItem(p.battlePile, card),
   }));
 
   game = emitEventToPlayer(game, player.id, { type: "playerPlayedCard", card });

@@ -4,8 +4,8 @@ import {
   emitEventToPlayer,
   getOtherPlayer,
   getAceHighRankValue,
-  isCollectionLengthEven,
-  peekLastItemInCollection,
+  isLengthEven,
+  peekLastItem,
   tryGetPlayer,
   updatePlayer,
 } from "@hellacardgames/lib";
@@ -22,7 +22,7 @@ export function collectCards(game: Game, playerId: string) {
   if (game.status !== "started") {
     return { success: false, error: "invalidStatus" } as const;
   }
-  if (isCollectionLengthEven(player.battlePile)) {
+  if (isLengthEven(player.battlePile)) {
     return { success: false, error: "invalidMove" } as const;
   }
   const { otherPlayer } = getOtherPlayer(game, player.id);
@@ -36,8 +36,8 @@ export function collectCards(game: Game, playerId: string) {
     return { success: false, error: "invalidMove" } as const;
   }
   if (player.battlePile.length === otherPlayer.battlePile.length) {
-    const playerCard = peekLastItemInCollection(player.battlePile);
-    const otherPlayerCard = peekLastItemInCollection(otherPlayer.battlePile);
+    const playerCard = peekLastItem(player.battlePile);
+    const otherPlayerCard = peekLastItem(otherPlayer.battlePile);
     const playerRankValue = getAceHighRankValue(playerCard.rank);
     const otherPlayerRankValue = getAceHighRankValue(otherPlayerCard.rank);
     if (playerRankValue < otherPlayerRankValue) {

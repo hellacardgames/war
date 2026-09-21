@@ -1,6 +1,6 @@
-import { isCollectionLengthEven } from "@hellacardgames/lib";
+import { isLengthEven } from "@hellacardgames/lib";
 import type { Player } from "../types/Player.js";
 
 export function canPlayCardFaceUp(player: Player): boolean {
-  return isCollectionLengthEven(player.battlePile);
+  return isLengthEven(player.battlePile);
 }
