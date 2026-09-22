@@ -1,5 +1,5 @@
 import {
-  addItem,
+  appendItem,
   emitEvent,
   emitEventToOtherPlayer,
   emitEventToPlayer,
@@ -32,7 +32,7 @@ export function playCardFaceUp(game: Game, playerId: string) {
   game = updatePlayer(game, player.id, (p) => ({
     ...p,
     deck: newDeck,
-    battlePile: addItem(p.battlePile, card),
+    battlePile: appendItem(p.battlePile, card),
   }));
 
   game = emitEventToPlayer(game, player.id, { type: "playerPlayedCard", card });
