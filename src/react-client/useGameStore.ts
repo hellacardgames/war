@@ -1,0 +1,134 @@
+import { useEffect, useState } from "react";
+import { applyEvent } from "./applyEvent.js";
+import type { Client, ClientState } from "../client/index.js";
+
+const GET_EVENTS_INTERVAL_MS = 500;
+
+export type GameStore = {
+  readonly state: ClientState;
+  readonly collectCards: () => ReturnType<Client["collectCards"]>;
+  readonly leaveGame: () => ReturnType<Client["leaveGame"]>;
+  readonly playCardFaceDown: () => ReturnType<Client["playCardFaceDown"]>;
+  readonly playCardFaceUp: () => ReturnType<Client["playCardFaceUp"]>;
+  readonly replenishDeck: () => ReturnType<Client["replenishDeck"]>;
+  readonly sendChat: (text: string) => ReturnType<Client["sendChat"]>;
+  readonly startGame: () => ReturnType<Client["startGame"]>;
+};
+
+type GetClientStateAndClearEventsError = Extract<
+  Awaited<ReturnType<Client["getClientStateAndClearEvents"]>>,
+  { success: false }
+>["error"];
+
+type GetEventsAndClearAcknowledgedError = Extract<
+  Awaited<ReturnType<Client["getEventsAndClearAcknowledged"]>>,
+  { success: false }
+>["error"];
+
+export function useGameStore(
+  client: Client,
+  gameId: string | null,
+  playerId: string | null,
+) {
+  const [initialState, setInitialState] = useState<ClientState | null>(null);
+  const [game, setGame] = useState<
+    | GameStore
+    | GetClientStateAndClearEventsError
+    | GetEventsAndClearAcknowledgedError
+    | null
+  >(null);
+
+  useEffect(() => {
+    if (gameId === null || playerId === null) {
+      return;
+    }
+    const doGetClientState = async () => {
+      const result = await client.getClientStateAndClearEvents(
+        gameId,
+        playerId,
+      );
+      if (!result.success) {
+        setGame(result.error);
+        return;
+      }
+      setInitialState(result.state);
+    };
+    doGetClientState();
+  }, [client, gameId, playerId]);
+
+  useEffect(() => {
+    if (!initialState) {
+      return;
+    }
+
+    const { gameId, playerId } = initialState;
+    let intervalId: number | null = null;
+
+    const processedEventIds = new Set<string>();
+    let lastReadEventId = "";
+    let isLeaving = false;
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGame({
+      state: initialState,
+      collectCards: () => client.collectCards(gameId, playerId),
+      leaveGame: async () => {
+        isLeaving = true;
+        const result = await client.leaveGame(gameId, playerId);
+        if (!result.success) {
+          isLeaving = false;
+        }
+        return result;
+      },
+      playCardFaceDown: () => client.playCardFaceDown(gameId, playerId),
+      playCardFaceUp: () => client.playCardFaceUp(gameId, playerId),
+      replenishDeck: () => client.replenishDeck(gameId, playerId),
+      sendChat: (text: string) => client.sendChat(gameId, playerId, text),
+      startGame: () => client.startGame(gameId, playerId),
+    });
+
+    intervalId = window.setInterval(async () => {
+      if (isLeaving) {
+        return;
+      }
+      const result = await client.getEventsAndClearAcknowledged(
+        gameId,
+        playerId,
+        lastReadEventId,
+      );
+      if (!result.success) {
+        if (intervalId !== null) {
+          window.clearInterval(intervalId);
+        }
+        setGame(result.error);
+        return;
+      }
+      lastReadEventId = result.events[result.events.length - 1]?.id ?? "";
+      for (const event of result.events) {
+        if (processedEventIds.has(event.id)) {
+          console.warn("Duplicate event detected... Ignoring!", event);
+          continue;
+        }
+        processedEventIds.add(event.id);
+        console.log(event);
+        setGame((prev) => {
+          if (typeof prev === "string" || prev === null) {
+            return prev;
+          }
+          return {
+            ...prev,
+            state: applyEvent(prev.state, event),
+          };
+        });
+      }
+    }, GET_EVENTS_INTERVAL_MS);
+
+    return () => {
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+      }
+    };
+  }, [client, initialState]);
+
+  return game;
+}
