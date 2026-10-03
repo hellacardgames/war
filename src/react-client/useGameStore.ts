@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { applyEvent } from "./applyEvent.js";
+import { createClient } from "../client/index.js";
 import type { Client, ClientState } from "../client/index.js";
 
 const GET_EVENTS_INTERVAL_MS = 500;
@@ -26,10 +27,12 @@ type GetEventsAndClearAcknowledgedError = Extract<
 >["error"];
 
 export function useGameStore(
-  client: Client,
+  baseUrl: string,
   gameId: string | null,
   playerId: string | null,
 ) {
+  const client = useMemo(() => createClient(baseUrl), [baseUrl]);
+
   const [initialState, setInitialState] = useState<ClientState | null>(null);
   const [game, setGame] = useState<
     | GameStore
