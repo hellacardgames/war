@@ -1,14 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { applyEvent } from "./applyEvent.js";
 import { createClient } from "../client/index.js";
-import type { Client, ClientState } from "../client/index.js";
+import type { Client, ClientState, GameEvent } from "../client/index.js";
 
 const GET_EVENTS_INTERVAL_MS = 500;
 
+type UseGameStoreResult =
+  | GameStore
+  | GetClientStateAndClearEventsError
+  | GetEventsAndClearAcknowledgedError
+  | null;
+
 export type GameStore = {
   readonly state: ClientState;
-  readonly collectCards: () => ReturnType<Client["collectCards"]>;
+  readonly event: GameEvent | null;
+  readonly completeEvent: () => void;
   readonly leaveGame: () => ReturnType<Client["leaveGame"]>;
+  readonly collectCards: () => ReturnType<Client["collectCards"]>;
   readonly playCardFaceDown: () => ReturnType<Client["playCardFaceDown"]>;
   readonly playCardFaceUp: () => ReturnType<Client["playCardFaceUp"]>;
   readonly replenishDeck: () => ReturnType<Client["replenishDeck"]>;
@@ -30,15 +38,22 @@ export function useGameStore(
   baseUrl: string,
   gameId: string,
   playerId: string,
-) {
+): UseGameStoreResult {
   const client = useMemo(() => createClient(baseUrl), [baseUrl]);
 
   const [initialState, setInitialState] = useState<ClientState | null>(null);
-  const [game, setGame] = useState<
-    | GameStore
+
+  const [state, setState] = useState<
+    | ClientState
     | GetClientStateAndClearEventsError
     | GetEventsAndClearAcknowledgedError
     | null
+  >(null);
+
+  const [events, setEvents] = useState<GameEvent[]>([]);
+
+  const [leaveGame, setLeaveGame] = useState<
+    (() => ReturnType<Client["leaveGame"]>) | null
   >(null);
 
   useEffect(() => {
@@ -48,7 +63,7 @@ export function useGameStore(
         playerId,
       );
       if (!result.success) {
-        setGame(result.error);
+        setState(result.error);
         return;
       }
       setInitialState(result.state);
@@ -61,30 +76,22 @@ export function useGameStore(
       return;
     }
 
-    const { gameId, playerId } = initialState;
     let intervalId: number | null = null;
 
-    const processedEventIds = new Set<string>();
+    const eventIdTracker = new Set<string>();
     let lastReadEventId = "";
     let isLeaving = false;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setGame({
-      state: initialState,
-      collectCards: () => client.collectCards(gameId, playerId),
-      leaveGame: async () => {
-        isLeaving = true;
-        const result = await client.leaveGame(gameId, playerId);
-        if (!result.success) {
-          isLeaving = false;
-        }
-        return result;
-      },
-      playCardFaceDown: () => client.playCardFaceDown(gameId, playerId),
-      playCardFaceUp: () => client.playCardFaceUp(gameId, playerId),
-      replenishDeck: () => client.replenishDeck(gameId, playerId),
-      sendChat: (text: string) => client.sendChat(gameId, playerId, text),
-      startGame: () => client.startGame(gameId, playerId),
+    setState(initialState);
+
+    setLeaveGame(() => async () => {
+      isLeaving = true;
+      const result = await client.leaveGame(gameId, playerId);
+      if (!result.success) {
+        isLeaving = false;
+      }
+      return result;
     });
 
     intervalId = window.setInterval(async () => {
@@ -100,26 +107,31 @@ export function useGameStore(
         if (intervalId !== null) {
           window.clearInterval(intervalId);
         }
-        setGame(result.error);
+        setState(result.error);
         return;
       }
       lastReadEventId = result.events[result.events.length - 1]?.id ?? "";
+      const newEvents: GameEvent[] = [];
       for (const event of result.events) {
-        if (processedEventIds.has(event.id)) {
+        if (eventIdTracker.has(event.id)) {
           console.warn("Duplicate event detected... Ignoring!", event);
           continue;
         }
-        processedEventIds.add(event.id);
+        eventIdTracker.add(event.id);
+        if (event.type === "chat") {
+          setState((prev) => {
+            if (typeof prev === "string" || prev === null) {
+              return prev;
+            }
+            return applyEvent(prev, event);
+          });
+        } else {
+          newEvents.push(event);
+        }
         console.log(event);
-        setGame((prev) => {
-          if (typeof prev === "string" || prev === null) {
-            return prev;
-          }
-          return {
-            ...prev,
-            state: applyEvent(prev.state, event),
-          };
-        });
+      }
+      if (newEvents.length > 0) {
+        setEvents((prev) => [...prev, ...newEvents]);
       }
     }, GET_EVENTS_INTERVAL_MS);
 
@@ -128,7 +140,84 @@ export function useGameStore(
         window.clearInterval(intervalId);
       }
     };
-  }, [client, initialState]);
+  }, [client, initialState, gameId, playerId]);
 
-  return game;
+  const event = events[0] ?? null;
+
+  const completeEvent = useCallback(() => {
+    if (!event) {
+      return;
+    }
+    setState((prev) => {
+      if (typeof prev === "string" || prev === null) {
+        return prev;
+      }
+      return applyEvent(prev, event);
+    });
+    setEvents((prev) => prev.slice(1));
+  }, [event]);
+
+  const collectCards = useCallback(
+    () => client.collectCards(gameId, playerId),
+    [client, gameId, playerId],
+  );
+
+  const playCardFaceDown = useCallback(
+    () => client.playCardFaceDown(gameId, playerId),
+    [client, gameId, playerId],
+  );
+
+  const playCardFaceUp = useCallback(
+    () => client.playCardFaceUp(gameId, playerId),
+    [client, gameId, playerId],
+  );
+
+  const replenishDeck = useCallback(
+    () => client.replenishDeck(gameId, playerId),
+    [client, gameId, playerId],
+  );
+
+  const sendChat = useCallback(
+    (text: string) => client.sendChat(gameId, playerId, text),
+    [client, gameId, playerId],
+  );
+
+  const startGame = useCallback(
+    () => client.startGame(gameId, playerId),
+    [client, gameId, playerId],
+  );
+
+  const gameStore = useMemo(() => {
+    if (typeof state === "string" || state === null) {
+      return state;
+    }
+    if (leaveGame === null) {
+      return null;
+    }
+    return {
+      state,
+      event,
+      completeEvent,
+      leaveGame,
+      collectCards,
+      playCardFaceDown,
+      playCardFaceUp,
+      replenishDeck,
+      sendChat,
+      startGame,
+    };
+  }, [
+    state,
+    event,
+    completeEvent,
+    leaveGame,
+    collectCards,
+    playCardFaceDown,
+    playCardFaceUp,
+    replenishDeck,
+    sendChat,
+    startGame,
+  ]);
+
+  return gameStore;
 }
