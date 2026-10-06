@@ -9,4 +9,5 @@ export type Player = {
   readonly deck: readonly Card[];
   readonly capturePile: readonly Card[];
   readonly battlePile: readonly Card[];
+  readonly roundWinner: boolean;
 };

@@ -10,6 +10,7 @@ import {
 } from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import { canPlayCardFaceDown } from "../lib/canPlayCardFaceDown.js";
+import { checkAndReportRoundWinner } from "../lib/checkAndReportRoundWinner.js";
 import { isDeckEmpty } from "../lib/isDeckEmpty.js";
 import type { Game } from "../types/Game.js";
 
@@ -42,6 +43,8 @@ export function playCardFaceDown(game: Game, playerId: string) {
     type: "otherPlayerPlayedCard",
     card,
   });
+
+  game = checkAndReportRoundWinner(game);
 
   game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
   game = emitEvent(game, {

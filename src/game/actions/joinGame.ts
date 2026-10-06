@@ -22,6 +22,7 @@ export function joinGame(game: Game, userId: string, username: string) {
     deck: [],
     capturePile: [],
     battlePile: [],
+    roundWinner: false,
   };
 
   game = emitEvent(game, { type: "otherPlayerJoined", username });

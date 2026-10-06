@@ -21,6 +21,7 @@ export const getClientStateAndClearEvents = getClientStateAndClearEventsFactory<
       deckSize: player.deck.length,
       capturePileSize: player.capturePile.length,
       battlePile: player.battlePile,
+      roundWinner: player.roundWinner,
     },
     otherPlayer: otherPlayer
       ? {
@@ -28,10 +29,13 @@ export const getClientStateAndClearEvents = getClientStateAndClearEventsFactory<
           deckSize: otherPlayer.deck.length,
           capturePileSize: otherPlayer.capturePile.length,
           battlePile: otherPlayer.battlePile,
+          roundWinner: otherPlayer.roundWinner,
         }
       : null,
     adminUsername: getPlayer(game, game.adminId).player.username,
     expiresAt: game.expiresAt,
     chatMessages: game.chatMessages,
+    gameWinnerUsername:
+      game.status === "completed" ? game.gameWinnerUsername : null,
   };
 });

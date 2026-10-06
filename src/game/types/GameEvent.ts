@@ -20,6 +20,7 @@ export type GameEvent =
   | {
       readonly type: "gameCompleted";
       readonly id: string;
+      readonly gameWinnerUsername: string;
     }
   | {
       readonly type: "gameForfeited";
@@ -59,6 +60,10 @@ export type GameEvent =
       readonly card: Card;
     }
   | {
+      readonly type: "otherPlayerWonRound";
+      readonly id: string;
+    }
+  | {
       readonly type: "playerCollectedCards";
       readonly id: string;
       readonly numCards: number;
@@ -77,4 +82,8 @@ export type GameEvent =
       readonly type: "playerPlayedCard";
       readonly id: string;
       readonly card: Card;
+    }
+  | {
+      readonly type: "playerWonRound";
+      readonly id: string;
     };

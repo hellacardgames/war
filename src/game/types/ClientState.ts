@@ -10,6 +10,7 @@ export type ClientState = {
   readonly adminUsername: string;
   readonly expiresAt: number;
   readonly chatMessages: readonly ChatMessage[];
+  readonly gameWinnerUsername: string | null;
 };
 
 type Player = {
@@ -17,4 +18,5 @@ type Player = {
   readonly deckSize: number;
   readonly capturePileSize: number;
   readonly battlePile: readonly Card[];
+  readonly roundWinner: boolean;
 };

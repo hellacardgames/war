@@ -18,7 +18,11 @@ export function applyEvent(
     case "expirationUpdated":
       return { ...previousState, expiresAt: event.expiresAt };
     case "gameCompleted":
-      return { ...previousState, status: "completed" };
+      return {
+        ...previousState,
+        status: "completed",
+        gameWinnerUsername: event.gameWinnerUsername,
+      };
     case "gameForfeited":
       return { ...previousState, status: "forfeited" };
     case "gameStarted":
@@ -32,6 +36,7 @@ export function applyEvent(
               battlePile: [],
               capturePileSize:
                 previousState.otherPlayer.capturePileSize + event.numCards,
+              roundWinner: false,
             }
           : null,
         player: {
@@ -68,6 +73,7 @@ export function applyEvent(
           deckSize: 0,
           capturePileSize: 0,
           battlePile: [],
+          roundWinner: false,
         },
       };
     case "otherPlayerLeft":
@@ -86,6 +92,16 @@ export function applyEvent(
             }
           : null,
       };
+    case "otherPlayerWonRound":
+      return {
+        ...previousState,
+        otherPlayer: previousState.otherPlayer
+          ? {
+              ...previousState.otherPlayer,
+              roundWinner: true,
+            }
+          : null,
+      };
     case "playerCollectedCards":
       return {
         ...previousState,
@@ -94,6 +110,7 @@ export function applyEvent(
           battlePile: [],
           capturePileSize:
             previousState.player.capturePileSize + event.numCards,
+          roundWinner: false,
         },
         otherPlayer: previousState.otherPlayer
           ? {
@@ -126,6 +143,14 @@ export function applyEvent(
           ...previousState.player,
           battlePile: [...previousState.player.battlePile, event.card],
           deckSize: previousState.player.deckSize - 1,
+        },
+      };
+    case "playerWonRound":
+      return {
+        ...previousState,
+        player: {
+          ...previousState.player,
+          roundWinner: true,
         },
       };
   }

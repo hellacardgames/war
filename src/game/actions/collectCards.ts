@@ -3,9 +3,6 @@ import {
   emitEventToOtherPlayer,
   emitEventToPlayer,
   getOtherPlayer,
-  getAceHighRankValue,
-  isLengthEven,
-  peekLastItem,
   tryGetPlayer,
   updatePlayer,
 } from "@hellacardgames/lib";
@@ -22,34 +19,11 @@ export function collectCards(game: Game, playerId: string) {
   if (game.status !== "started") {
     return { success: false, error: "invalidStatus" } as const;
   }
-  if (isLengthEven(player.battlePile)) {
+  if (!player.roundWinner) {
     return { success: false, error: "invalidMove" } as const;
   }
+
   const { otherPlayer } = getOtherPlayer(game, player.id);
-  if (player.battlePile.length < otherPlayer.battlePile.length) {
-    return { success: false, error: "invalidMove" } as const;
-  }
-  if (
-    player.battlePile.length > otherPlayer.battlePile.length &&
-    !isOutOfCards(otherPlayer)
-  ) {
-    return { success: false, error: "invalidMove" } as const;
-  }
-  if (player.battlePile.length === otherPlayer.battlePile.length) {
-    const playerCard = peekLastItem(player.battlePile);
-    const otherPlayerCard = peekLastItem(otherPlayer.battlePile);
-    const playerRankValue = getAceHighRankValue(playerCard.rank);
-    const otherPlayerRankValue = getAceHighRankValue(otherPlayerCard.rank);
-    if (playerRankValue < otherPlayerRankValue) {
-      return { success: false, error: "invalidMove" } as const;
-    }
-    if (
-      playerRankValue === otherPlayerRankValue &&
-      !isOutOfCards(otherPlayer)
-    ) {
-      return { success: false, error: "invalidMove" } as const;
-    }
-  }
 
   const collectedCards = [...otherPlayer.battlePile, ...player.battlePile];
 
@@ -57,6 +31,7 @@ export function collectCards(game: Game, playerId: string) {
     ...p,
     capturePile: [...p.capturePile, ...collectedCards],
     battlePile: [],
+    roundWinner: false,
   }));
 
   game = updatePlayer(game, otherPlayer.id, (p) => ({
@@ -74,8 +49,11 @@ export function collectCards(game: Game, playerId: string) {
   });
 
   if (isOutOfCards(otherPlayer)) {
-    game = transitionGameToCompleted(game);
-    game = emitEvent(game, { type: "gameCompleted" });
+    game = transitionGameToCompleted(game, player.username);
+    game = emitEvent(game, {
+      type: "gameCompleted",
+      gameWinnerUsername: player.username,
+    });
   }
 
   game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };

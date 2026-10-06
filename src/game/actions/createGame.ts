@@ -11,6 +11,7 @@ export function createGame(userId: string, username: string) {
     deck: [],
     capturePile: [],
     battlePile: [],
+    roundWinner: false,
   };
 
   const createdAt = Date.now();

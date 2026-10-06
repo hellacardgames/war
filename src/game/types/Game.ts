@@ -31,6 +31,7 @@ export type CompletedGame = {
   readonly chatMessages: readonly ChatMessage[];
   readonly players: readonly Player[];
   readonly adminId: string;
+  readonly gameWinnerUsername: string;
 };
 
 export type ForfeitedGame = {
