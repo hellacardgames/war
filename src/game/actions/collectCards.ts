@@ -9,6 +9,7 @@ import {
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
 import { isOutOfCards } from "../lib/isOutOfCards.js";
 import { transitionGameToCompleted } from "../lib/transitionGameToCompleted.js";
+import { setAvailableActions } from "../lib/setAvailableActions.js";
 import type { Game } from "../types/Game.js";
 
 export function collectCards(game: Game, playerId: string) {
@@ -47,6 +48,8 @@ export function collectCards(game: Game, playerId: string) {
     type: "otherPlayerCollectedCards",
     numCards: collectedCards.length,
   });
+
+  game = setAvailableActions(game);
 
   if (isOutOfCards(otherPlayer)) {
     game = transitionGameToCompleted(game, player.username);

@@ -64,6 +64,13 @@ export type GameEvent =
       readonly id: string;
     }
   | {
+      readonly type: "playerAvailableActionsSet";
+      readonly id: string;
+      readonly canPlayCardFaceUp: boolean;
+      readonly canPlayCardFaceDown: boolean;
+      readonly canReplenishDeck: boolean;
+    }
+  | {
       readonly type: "playerCollectedCards";
       readonly id: string;
       readonly numCards: number;

@@ -22,6 +22,9 @@ export const getClientStateAndClearEvents = getClientStateAndClearEventsFactory<
       capturePileSize: player.capturePile.length,
       battlePile: player.battlePile,
       roundWinner: player.roundWinner,
+      canPlayCardFaceUp: player.canPlayCardFaceUp,
+      canPlayCardFaceDown: player.canPlayCardFaceDown,
+      canReplenishDeck: player.canReplenishDeck,
     },
     otherPlayer: otherPlayer
       ? {

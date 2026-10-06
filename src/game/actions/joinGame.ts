@@ -23,6 +23,9 @@ export function joinGame(game: Game, userId: string, username: string) {
     capturePile: [],
     battlePile: [],
     roundWinner: false,
+    canPlayCardFaceUp: false,
+    canPlayCardFaceDown: false,
+    canReplenishDeck: false,
   };
 
   game = emitEvent(game, { type: "otherPlayerJoined", username });

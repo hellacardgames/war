@@ -102,6 +102,16 @@ export function applyEvent(
             }
           : null,
       };
+    case "playerAvailableActionsSet":
+      return {
+        ...previousState,
+        player: {
+          ...previousState.player,
+          canPlayCardFaceUp: event.canPlayCardFaceUp,
+          canPlayCardFaceDown: event.canPlayCardFaceDown,
+          canReplenishDeck: event.canReplenishDeck,
+        },
+      };
     case "playerCollectedCards":
       return {
         ...previousState,

@@ -3,15 +3,13 @@ import {
   emitEvent,
   emitEventToOtherPlayer,
   emitEventToPlayer,
-  getOtherPlayer,
   takeLastItem,
   tryGetPlayer,
   updatePlayer,
 } from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
-import { canPlayCardFaceDown } from "../lib/canPlayCardFaceDown.js";
 import { checkAndReportRoundWinner } from "../lib/checkAndReportRoundWinner.js";
-import { isDeckEmpty } from "../lib/isDeckEmpty.js";
+import { setAvailableActions } from "../lib/setAvailableActions.js";
 import type { Game } from "../types/Game.js";
 
 export function playCardFaceDown(game: Game, playerId: string) {
@@ -22,12 +20,8 @@ export function playCardFaceDown(game: Game, playerId: string) {
   if (game.status !== "started") {
     return { success: false, error: "invalidStatus" } as const;
   }
-  const { otherPlayer } = getOtherPlayer(game, player.id);
-  if (!canPlayCardFaceDown(player, otherPlayer)) {
+  if (!player.canPlayCardFaceDown) {
     return { success: false, error: "invalidMove" } as const;
-  }
-  if (isDeckEmpty(player)) {
-    return { success: false, error: "deckEmpty" } as const;
   }
 
   const { collection: newDeck, item: card } = takeLastItem(player.deck);
@@ -43,6 +37,8 @@ export function playCardFaceDown(game: Game, playerId: string) {
     type: "otherPlayerPlayedCard",
     card,
   });
+
+  game = setAvailableActions(game);
 
   game = checkAndReportRoundWinner(game);
 

@@ -10,6 +10,10 @@ export function canPlayCardFaceDown(
   player: Player,
   otherPlayer: Player,
 ): boolean {
+  if (player.deck.length === 0) {
+    return false;
+  }
+
   if (isLengthEven(player.battlePile)) {
     return false;
   }

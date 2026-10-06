@@ -2,15 +2,12 @@ import {
   emitEvent,
   emitEventToOtherPlayer,
   emitEventToPlayer,
-  getOtherPlayer,
   shuffle,
   tryGetPlayer,
   updatePlayer,
 } from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS } from "../constants.js";
-import { canPlayCard } from "../lib/canPlayCard.js";
-import { isCapturePileEmpty } from "../lib/isCapturePileEmpty.js";
-import { isDeckEmpty } from "../lib/isDeckEmpty.js";
+import { setAvailableActions } from "../lib/setAvailableActions.js";
 import type { Game } from "../types/Game.js";
 
 export function replenishDeck(game: Game, playerId: string) {
@@ -21,15 +18,8 @@ export function replenishDeck(game: Game, playerId: string) {
   if (game.status !== "started") {
     return { success: false, error: "invalidStatus" } as const;
   }
-  const { otherPlayer } = getOtherPlayer(game, player.id);
-  if (!canPlayCard(player, otherPlayer)) {
+  if (!player.canReplenishDeck) {
     return { success: false, error: "invalidMove" } as const;
-  }
-  if (!isDeckEmpty(player)) {
-    return { success: false, error: "deckNotEmpty" } as const;
-  }
-  if (isCapturePileEmpty(player)) {
-    return { success: false, error: "capturePileEmpty" } as const;
   }
 
   const newDeck = shuffle(player.capturePile);
@@ -47,6 +37,8 @@ export function replenishDeck(game: Game, playerId: string) {
     type: "otherPlayerDeckReplenished",
     numCards: newDeck.length,
   });
+
+  game = setAvailableActions(game);
 
   game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
   game = emitEvent(game, {

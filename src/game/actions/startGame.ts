@@ -13,6 +13,7 @@ import {
 } from "@hellacardgames/lib";
 import { EXPIRY_EXTENSION_MS, MIN_PLAYERS } from "../constants.js";
 import { transitionGameToStarted } from "../lib/transitionGameToStarted.js";
+import { setAvailableActions } from "../lib/setAvailableActions.js";
 import type { Game } from "../types/Game.js";
 
 export function startGame(game: Game, playerId: string) {
@@ -64,6 +65,8 @@ export function startGame(game: Game, playerId: string) {
     type: "otherPlayerDeckInitialized",
     numCards: playerTwoDeck.length,
   });
+
+  game = setAvailableActions(game);
 
   game = { ...game, expiresAt: Date.now() + EXPIRY_EXTENSION_MS };
   game = emitEvent(game, {
